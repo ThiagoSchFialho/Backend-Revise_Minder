@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "start": "node ./dist/bin/www",
-    "dev": "tsx watch ./src/bin/www",
-    "build": "tsc && npm run copy-public",
+    "dev": "npm run build && npm start",
+    "build": "tsc && npm run copy-ejs && npm run copy-public",
+    "copy-ejs": "copyfiles -u 1 src/**/*.ejs dist",
     "copy-public": "copyfiles -u 1 src/public/**/* dist"
   },
   "dependencies": {
     "@types/express": "^5.0.0",
+    "bcrypt": "^5.1.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^16.4.7",
