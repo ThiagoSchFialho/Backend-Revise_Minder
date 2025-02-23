@@ -1,23 +1,44 @@
 import { User } from '../entities/user.entity';
 import { IUserModel } from './interfaces/user.model.interface';
+import { QueryResult } from 'pg';
+const pool = require('../db/db.config');
 
 export class UserModel implements IUserModel {
-  createUser(email: string, password: string): Promise<User> {
+  public async createUser(email: string, password: string): Promise<User> {
+    const client = await pool.connect();
+    let result: QueryResult<User>;
+
+    try {
+      result = await client.query(`
+        INSERT INTO users (email, password)
+        VALUES ($1, $2)
+        RETURNING *`,
+        [email, password]   
+      );
+
+    } catch(error) {
+      console.error('Erro ao criar usuário', error);
+      throw error
+
+    } finally {
+      client.release();
+    }
+
+    return result.rows[0];
+  }
+  public async getUser(id: number): Promise<User> {
     throw new Error('Method not implemented.');
   }
-  getUser(id: number): Promise<User> {
+  public async getUsers(): Promise<User[]> {
     throw new Error('Method not implemented.');
   }
-  getUsers(): Promise<User[]> {
+  public async getUserByEmail(email: string): Promise<User> {
     throw new Error('Method not implemented.');
   }
-  getUserByEmail(email: string): Promise<User> {
+  public async updateUser(id: number, email: string, password: string): Promise<User> {
     throw new Error('Method not implemented.');
   }
-  updateUser(id: number, email: string, password: string): Promise<User> {
+  public async deleteUser(id: number): Promise<User> {
     throw new Error('Method not implemented.');
   }
-  deleteUser(id: number): Promise<User> {
-    throw new Error('Method not implemented.');
-  }
-};
+}

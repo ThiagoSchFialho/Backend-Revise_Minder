@@ -12,5 +12,5 @@ export class Review implements IReview {
     this.status = status
     this.date = date
     this.study_id = study_id
-  };
-};
+  }
+}

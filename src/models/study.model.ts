@@ -1,20 +1,22 @@
 import { Study } from '../entities/study.entity';
 import { IStudyModel } from './interfaces/study.model.interface';
+import { QueryResult } from 'pg';
+const pool = require('../db/db.config');
 
 export class StudyModel implements IStudyModel {
-  createStudy(topic: string, qnt_reviews: number, date: string): Promise<Study> {
+  public async createStudy(topic: string, qnt_reviews: number, date: string): Promise<Study> {
     throw new Error('Method not implemented.');
   }
-  getStudy(id: number): Promise<Study> {
+  public async getStudy(id: number): Promise<Study> {
     throw new Error('Method not implemented.');
   }
-  getStudies(): Promise<Study[]> {
+  public async getStudies(): Promise<Study[]> {
     throw new Error('Method not implemented.');
   }
-  updateStudy(id: number, topic: string, qnt_reviews: number, date: string): Promise<Study> {
+  public async updateStudy(id: number, topic: string, qnt_reviews: number, date: string): Promise<Study> {
     throw new Error('Method not implemented.');
   }
-  deleteStudy(id: number): Promise<Study> {
+  public async deleteStudy(id: number): Promise<Study> {
     throw new Error('Method not implemented.');
   }
-};
+}

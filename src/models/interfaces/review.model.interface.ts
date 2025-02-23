@@ -6,4 +6,4 @@ export interface IReviewModel {
   getReviews(): Promise<Review[]>;
   updateReview(id: number, topic: string, status: string, date: string): Promise<Review>;
   deleteReview(id: number): Promise<Review>;
-};
+}

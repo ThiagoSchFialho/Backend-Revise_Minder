@@ -12,5 +12,5 @@ export class Study implements IStudy {
     this.qnt_reviews = qnt_reviews
     this.date = date
     this.user_id = user_id
-  };
-};
+  }
+}

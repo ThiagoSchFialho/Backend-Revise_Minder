@@ -7,4 +7,4 @@ export interface IUserModel {
   getUserByEmail(email: string): Promise<User>;
   updateUser(id: number, email: string, password: string): Promise<User>;
   deleteUser(id: number): Promise<User>;
-};
+}

@@ -6,4 +6,4 @@ export interface IStudyModel {
   getStudies(): Promise<Study[]>;
   updateStudy(id: number, topic: string, qnt_reviews: number, date: string): Promise<Study>;
   deleteStudy(id: number): Promise<Study>;
-};
+}

@@ -4,4 +4,4 @@ export interface IStudy {
   qnt_reviews: number;
   date: string;
   user_id: number;
-};
+}

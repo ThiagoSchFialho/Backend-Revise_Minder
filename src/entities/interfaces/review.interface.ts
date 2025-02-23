@@ -4,4 +4,4 @@ export interface IReview {
   status: string;
   date: string;
   study_id: number;
-};
+}

@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const client = new Client({
+const pool = new Client({
   user: process.env.db_user,
   host: process.env.db_host,
   database: process.env.db_database,
@@ -11,8 +11,8 @@ const client = new Client({
   port: Number(process.env.db_port),
 });
 
-client.connect()
+pool.connect()
   .then(() => console.log('Connected to PostgreSQL'))
-  .catch(err => console.error('Connection error', err.stack));
+  .catch((err: { stack: any; }) => console.error('Connection error', err.stack));
 
-module.exports = client;
+module.exports = pool;
