@@ -6,8 +6,16 @@ var logger = require('morgan');
 
 var usersRouter = require('./routes/users');
 var authRouter = require('./routes/auth');
+const cors = require('cors');
+require('dotenv').config();
 
 var app = express();
+
+// to accept requests from any origin
+// app.use(cors());
+
+// for app to accept requests from the frontend running on port 5173 locally
+app.use(cors({ origin: process.env.FRONTEND_HOST }));
 
 // view engine setup
 app.set('view engine', 'ejs');
