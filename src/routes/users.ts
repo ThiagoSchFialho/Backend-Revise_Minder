@@ -1,8 +1,9 @@
+import { Request, Response } from 'express';
 var express = require('express');
 var router = express.Router();
 
 /* GET users listing. */
-router.get('/', function(req: any, res: { send: (arg0: string) => void; }, next: any) {
+router.get('/', function(req: Request, res: Response, next: any) {
   res.send('respond with a resource');
 });
 

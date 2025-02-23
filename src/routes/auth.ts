@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 var express = require('express');
 var router = express.Router();
 const { UserModel } = require('../models/user.model');
@@ -7,11 +8,11 @@ const jwt = require('jsonwebtoken');
 const verifyToken = require('../middlewares/authMiddleware');
 require('dotenv').config();
 
-router.get('/verify-token', verifyToken, (req: any, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { message: string; }): void; new(): any; }; }; }) => {
+router.get('/verify-token', verifyToken, (req: Request, res: Response ) => {
   res.status(200).json({ message: 'Token is valid' });
 });
 
-router.post('/register', async (req: { body: { email: any; password: any; teacherid: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { error?: string; message?: string; }): void; new(): any; }; }; }) => {
+router.post('/register', async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     const user = await userModel.getUserByEmail(email);
@@ -23,8 +24,30 @@ router.post('/register', async (req: { body: { email: any; password: any; teache
     const hashedPassword = await bcrypt.hash(password, 10);
     await userModel.createUser(email, hashedPassword);
     res.status(201).json({ message: 'User registered successfully' });
+
   } catch (error) {
     res.status(500).json({ error: 'Registration failed' });
+  }
+});
+
+router.post('/login', async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+    const user = await userModel.getUserByEmail(email);
+    if (!user) {
+      return res.status(401).json({ error: 'Authentication failed' });
+    }
+    const passwordMatch = await bcrypt.compare(password, user?.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ error: 'Authentication failed' });
+    }
+    const token = jwt.sign({ userId: user._id}, process.env.JWT_SECRET, {
+      expiresIn: '1h'
+    });
+    res.status(200).json({ token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Login failed' });
   }
 });
 
