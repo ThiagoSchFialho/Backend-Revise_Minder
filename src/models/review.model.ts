@@ -6,7 +6,7 @@ const pool = require('../db/db.config');
 export class ReviewModel implements IReviewModel {
   public async createReview(topic: string, status: string, date: string, study_id: number): Promise<Review> {
     const client = await pool.connect();
-    let result: QueryResult;
+    let result: QueryResult<Review>;
     
     try {
       result = await client.query(`
@@ -25,16 +25,53 @@ export class ReviewModel implements IReviewModel {
 
     return result.rows[0];
   }
-  public async getReview(id: number): Promise<Review> {
-    throw new Error('Method not implemented.');
+
+  public async getReviewsFromStudy(study_id: number): Promise<Review[]> {
+    const client = await pool.connect();
+    let result: QueryResult<Review>;
+    
+    try {
+      result = await client.query(`
+        SELECT *
+        FROM reviews
+        WHERE study_id = $1;`,
+        [study_id]
+      );
+      
+    } catch (error) {
+      console.error('Erro ao recuperar revisões', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    return result.rows;
   }
+
   public async getReviews(): Promise<Review[]> {
     throw new Error('Method not implemented.');
   }
-  public async updateReview(id: number, topic: string, status: string, date: string): Promise<Review> {
-    throw new Error('Method not implemented.');
-  }
+
   public async deleteReview(id: number): Promise<Review> {
-    throw new Error('Method not implemented.');
+    const client = await pool.connect();
+    let result: QueryResult<Review>;
+    
+    try {
+      result = await client.query(`
+        DELETE
+        FROM reviews
+        WHERE id = $1
+        RETURNING *;`,
+        [id]
+      );
+      
+    } catch (error) {
+      console.error('Erro ao remover revisão', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    return result.rows[0];
   }
 }
