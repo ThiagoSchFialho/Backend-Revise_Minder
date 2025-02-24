@@ -10,21 +10,37 @@ const verifyToken = require('../middlewares/authMiddleware');
 const studyModel = new StudyModel();
 const reviewModel = new ReviewModel();
 
+router.get('/', verifyToken, async function (req: Request, res: Response) {
+  const { user_id } = req.query;
+
+  try {
+    if (!user_id) {
+      return res.status(400).json({ error: 'Usuário indefinido' })
+    }
+
+    const studies = await studyModel.getStudies(user_id);
+    return res.status(200).json(studies);
+  } catch (error) {
+    console.error('Erro ao recuperar estudos', error)
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+})
+
 router.post('/', verifyToken, async function (req: Request, res: Response) {
   const { topic, qnt_reviews, study_date, user_id } = req.body;
 
   try {
     if (!topic || !qnt_reviews || !study_date) {
-      return res.status(400).json({ message: "Campos obrigatórios ausentes" });
+      return res.status(400).json({ error: "Campos obrigatórios ausentes" });
     }
 
     if (!user_id) {
-      return res.status(400).json({ message: "Usuário indefinido" });
+      return res.status(400).json({ error: "Usuário indefinido" });
     }
 
     const parsedDate = new Date(study_date);
     if (isNaN(parsedDate.getTime())) {
-      return res.status(400).json({ message: "Formato de data inválido. Use 'yyyy-mm-dd'." });
+      return res.status(400).json({ error: "Formato de data inválido. Use 'yyyy-mm-dd'." });
     }
     const fixedDate = addDays(parsedDate, 1);
 
@@ -49,7 +65,7 @@ router.post('/', verifyToken, async function (req: Request, res: Response) {
     res.status(201).json({ study, reviews });
   } catch (error) {
     console.error('Erro ao criar estudo', error);
-    return res.status(500).json({ message: 'Erro interno do servidor' });
+    return res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
 

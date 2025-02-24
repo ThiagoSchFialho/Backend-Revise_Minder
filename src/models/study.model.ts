@@ -6,7 +6,7 @@ const pool = require('../db/db.config');
 export class StudyModel implements IStudyModel {
   public async createStudy(topic: string, qnt_reviews: number, date: string, use_id: number): Promise<Study> {
     const client = await pool.connect();
-    let result: QueryResult;
+    let result: QueryResult<Study>;
     
     try {
       result = await client.query(`
@@ -28,7 +28,7 @@ export class StudyModel implements IStudyModel {
 
   public async getStudy(id: number): Promise<Study> {
     const client = await pool.connect();
-    let result: QueryResult;
+    let result: QueryResult<Study>;
 
     try {
       result = await client.query(`
@@ -48,14 +48,17 @@ export class StudyModel implements IStudyModel {
     return result.rows[0];
   }
 
-  public async getStudies(): Promise<Study[]> {
-    const client = pool.connect();
-    let result: QueryResult;
+  public async getStudies(user_id: number): Promise<Study[]> {
+    const client = await pool.connect();
+    let result: QueryResult<Study>;
 
     try {
-      result = client.query(`
+      result = await client.query(`
         SELECT *
-        FROM studies;`);
+        FROM studies
+        WHERE user_id = $1;`,
+        [user_id]
+      );
 
     } catch (error) {
       console.error('Erro ao recuperar estudos', error);
