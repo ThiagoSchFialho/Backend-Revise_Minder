@@ -2,11 +2,12 @@ import { Request, Response } from 'express';
 var express = require('express');
 var router = express.Router();
 const { UserModel } = require('../models/user.model');
-const userModel = new UserModel();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const verifyToken = require('../middlewares/authMiddleware');
+
 require('dotenv').config();
+const userModel = new UserModel();
 
 router.get('/verify-token', verifyToken, (req: Request, res: Response ) => {
   res.status(200).json({ message: 'Token is valid' });
