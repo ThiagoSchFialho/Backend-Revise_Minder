@@ -40,7 +40,7 @@ router.get('/:id', verifyToken, async function (req: Request, res: Response) {
     console.error('Erro ao recuperar estudo', error)
     return res.status(500).json({ error: 'Erro interno do servidor' });
   }
-})
+});
 
 router.put('/:id', verifyToken, async function (req: Request, res: Response) {
   const { id } = req.params;
@@ -60,17 +60,17 @@ router.put('/:id', verifyToken, async function (req: Request, res: Response) {
       return res.status(400).json({ error: "Formato de data inválido. Use 'yyyy-mm-dd'." });
     }
     const fixedDate = addDays(parsedDate, 1);
-
     const formattedDate = format(fixedDate, 'yyyy-MM-dd');
+
     const study = await studyModel.updateStudy(id, topic, qnt_reviews, formattedDate, user_id);
 
-    const reviews = await reviewModel.getReviewsFromStudy(id);
+    if (!study) {
+      return res.status(404).json({ error: "Estudo não encontrado" });
+   }
 
-    reviews.forEach((review: { id: any; }) => {
-      reviewModel.deleteReview(review.id);
-    });
+    let existingReviews = await reviewModel.getReviewsFromStudy(id);
+    let updatedReviews = [];
 
-    let UpdatedReviews = [];
     for (let i = 0; i < qnt_reviews; i++) {
       let reviewDate;
       if (i === 0) {
@@ -82,16 +82,31 @@ router.put('/:id', verifyToken, async function (req: Request, res: Response) {
       }
 
       const formattedReviewDate = format(reviewDate, 'yyyy-MM-dd');
-      UpdatedReviews.push(await reviewModel.createReview(topic, 'todo', formattedReviewDate, study.id));
+
+      if (i < existingReviews.length) {
+        const updatedReview = await reviewModel.updateReview(existingReviews[i].id, topic, formattedReviewDate);
+        updatedReviews.push(updatedReview);
+
+      } else {
+        const newReview = await reviewModel.createReview(topic, 'todo', formattedReviewDate, study.id);
+        updatedReviews.push(newReview);
+      }
     }
 
-    res.status(201).json({ study, UpdatedReviews });
+    if (existingReviews.length > qnt_reviews) {
+      const reviewsToDelete = existingReviews.slice(qnt_reviews);
+      for (const review of reviewsToDelete) {
+        await reviewModel.deleteReview(review.id);
+      }
+    }
+
+    res.status(200).json({ study, updatedReviews });
 
   } catch (error) {
     console.error('Erro ao editar estudo', error);
     return res.status(500).json({ error: 'Erro interno do servidor' });
   }
-})
+});
 
 router.post('/', verifyToken, async function (req: Request, res: Response) {
   const { topic, qnt_reviews, study_date, user_id } = req.body;

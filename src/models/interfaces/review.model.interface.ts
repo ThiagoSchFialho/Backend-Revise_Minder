@@ -5,4 +5,5 @@ export interface IReviewModel {
   getReviewsFromStudy(study_id: number): Promise<Review[]>;
   getReviews(): Promise<Review[]>;
   deleteReview(id: number): Promise<Review>;
+  updateReview(id: number, topic: string, date: string): Promise<Review>;
 }
