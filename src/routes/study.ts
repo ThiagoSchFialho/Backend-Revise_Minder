@@ -69,6 +69,8 @@ router.put('/:id', verifyToken, async function (req: Request, res: Response) {
    }
 
     let existingReviews = await reviewModel.getReviewsFromStudy(id);
+    existingReviews.sort((a: { date: string | number | Date; }, b: { date: string | number | Date; }) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
     let updatedReviews = [];
 
     for (let i = 0; i < qnt_reviews; i++) {
