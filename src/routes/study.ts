@@ -141,7 +141,7 @@ router.post('/', verifyToken, async function (req: Request, res: Response) {
       }
 
       const formattedReviewDate = format(reviewDate, 'yyyy-MM-dd');
-      reviews.push(await reviewModel.createReview(topic, 'todo', formattedReviewDate, study.id));
+      reviews.push(await reviewModel.createReview(topic, 'todo', formattedReviewDate, study.id, user_id));
     }
 
     res.status(201).json({ study, reviews });

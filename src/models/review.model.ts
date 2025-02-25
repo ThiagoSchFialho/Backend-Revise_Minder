@@ -4,16 +4,16 @@ import { QueryResult } from 'pg';
 const pool = require('../db/db.config');
 
 export class ReviewModel implements IReviewModel {
-  public async createReview(topic: string, status: string, date: string, study_id: number): Promise<Review> {
+  public async createReview(topic: string, status: string, date: string, study_id: number, user_id: number): Promise<Review> {
     const client = await pool.connect();
     let result: QueryResult<Review>;
     
     try {
       result = await client.query(`
-        INSERT INTO reviews (topic, status, date, study_id)
-        VALUES ($1, $2, $3, $4)
+        INSERT INTO reviews (topic, status, date, study_id, user_id)
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING *;`,
-        [topic, status, date, study_id]
+        [topic, status, date, study_id, user_id]
       );
       
     } catch (error) {
@@ -48,8 +48,26 @@ export class ReviewModel implements IReviewModel {
     return result.rows;
   }
 
-  public async getReviews(): Promise<Review[]> {
-    throw new Error('Method not implemented.');
+  public async getReviews(user_id: number): Promise<Review[]> {
+    const client = await pool.connect();
+    let result: QueryResult<Review>;
+    
+    try {
+      result = await client.query(`
+        SELECT *
+        FROM reviews
+        WHERE user_id = $1;`,
+        [user_id]
+      );
+      
+    } catch (error) {
+      console.error('Erro ao recuperar revisões', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    return result.rows;
   }
 
   public async deleteReview(id: number): Promise<Review> {
