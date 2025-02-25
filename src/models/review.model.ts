@@ -115,4 +115,27 @@ export class ReviewModel implements IReviewModel {
 
     return result.rows[0];
   }
+
+  public async updateReviewStatus(id: number, status: string): Promise<Review> {
+    const client = await pool.connect();
+    let result: QueryResult<Review>;
+    
+    try {
+      result = await client.query(`
+        UPDATE reviews
+        SET status = $1
+        WHERE id = $2
+        RETURNING *;`,
+        [status, id]
+      );
+      
+    } catch (error) {
+      console.error('Erro ao atualizar revisão', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    return result.rows[0];
+  }
 }
