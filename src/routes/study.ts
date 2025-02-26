@@ -153,4 +153,20 @@ router.post('/', verifyToken, async function (req: Request, res: Response) {
   }
 });
 
+router.delete('/:id', verifyToken, async function (req: Request, res: Response) {
+  const { id } = req.params;
+
+  try {
+    if (!id) {
+      return res.status(400).json({ error: 'estudo indefinido' });
+    }
+
+    const study = await studyModel.deleteStudy(id);
+    return res.status(200).json(study);
+  } catch (error) {
+    console.error('Erro ao deletar estudo', error)
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+})
+
 module.exports = router;

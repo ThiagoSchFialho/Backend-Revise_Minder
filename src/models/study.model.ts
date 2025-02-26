@@ -94,6 +94,25 @@ export class StudyModel implements IStudyModel {
   }
 
   public async deleteStudy(id: number): Promise<Study> {
-    throw new Error('Method not implemented.');
+    const client = await pool.connect();
+    let result: QueryResult<Study>;
+
+    try {
+      result = await client.query(`
+        DELETE
+        FROM studies
+        WHERE id = $1
+        RETURNING *;`,
+        [id]
+      );
+
+    } catch (error) {
+      console.error('Erro ao remover estudo', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    return result.rows[0];
   }
 }
