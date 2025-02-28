@@ -90,7 +90,7 @@ router.put('/:id', verifyToken, async function (req: Request, res: Response) {
         updatedReviews.push(updatedReview);
 
       } else {
-        const newReview = await reviewModel.createReview(topic, 'todo', formattedReviewDate, study.id);
+        const newReview = await reviewModel.createReview(topic, 'todo', formattedReviewDate, study.id, user_id);
         updatedReviews.push(newReview);
       }
     }
