@@ -26,11 +26,24 @@ export class UserModel implements IUserModel {
   }
 
   public async getUser(id: number): Promise<User> {
-    throw new Error('Method not implemented.');
-  }
+    const client = await pool.connect();
+    let result: QueryResult<User>;
 
-  public async getUsers(): Promise<User[]> {
-    throw new Error('Method not implemented.');
+    try {
+      result = await client.query(`
+        SELECT *
+        FROM users
+        WHERE id = $1;`,
+        [id]
+      );
+    } catch (error) {
+      console.error('Erro ao recuperar usuário', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    return result.rows[0];
   }
 
   public async getUserByEmail(email: string): Promise<User> {
@@ -54,8 +67,48 @@ export class UserModel implements IUserModel {
     return result.rows[0];
   }
 
-  public async updateUser(id: number, email: string, password: string): Promise<User> {
-    throw new Error('Method not implemented.');
+  public async getEmailByUser(id: number): Promise<User> {
+    const client = await pool.connect();
+    let result: QueryResult<User>;
+
+    try {
+      result = await client.query(`
+        SELECT email
+        FROM users
+        WHERE id = $1;`,
+        [id]
+      );
+    } catch (error) {
+      console.error('Erro ao recuperar email', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    return result.rows[0];
+  }
+
+  public async updateUserEmail(id: number, email: string): Promise<User> {
+    const client = await pool.connect();
+    let result: QueryResult<User>;
+    
+    try {
+      result = await client.query(`
+        UPDATE users
+        SET email = $1
+        WHERE id = $2
+        RETURNING *;`,
+        [email, id]
+      );
+      
+    } catch (error) {
+      console.error('Erro ao editar email', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    return result.rows[0];
   }
 
   public async deleteUser(id: number): Promise<User> {
