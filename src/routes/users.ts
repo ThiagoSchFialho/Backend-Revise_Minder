@@ -79,4 +79,26 @@ router.post('/password', verifyToken, async function(req: Request, res: Response
   }
 })
 
+router.put('/password', verifyToken, async function(req: Request, res: Response, next: any) {
+  const { user_id, password } = req.body;
+
+  try {
+    if (!password) {
+      return res.status(400).json({ error: 'Senha indefinida' });
+    }
+
+    if (!user_id) {
+      return res.status(400).json({ error: 'Usuário indefinido' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await userModel.updateUserPassword(user_id, hashedPassword);
+
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error('Erro ao atualizar email', error)
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+})
+
 module.exports = router;

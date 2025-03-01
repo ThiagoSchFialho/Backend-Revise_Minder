@@ -111,6 +111,29 @@ export class UserModel implements IUserModel {
     return result.rows[0];
   }
 
+  public async updateUserPassword(id: number, password: string): Promise<User> {
+    const client = await pool.connect();
+    let result: QueryResult<User>;
+    
+    try {
+      result = await client.query(`
+        UPDATE users
+        SET password = $1
+        WHERE id = $2
+        RETURNING *;`,
+        [password, id]
+      );
+      
+    } catch (error) {
+      console.error('Erro ao editar senha', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    return result.rows[0];
+  }
+
   public async deleteUser(id: number): Promise<User> {
     throw new Error('Method not implemented.');
   }

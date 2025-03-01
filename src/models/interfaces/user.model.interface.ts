@@ -6,5 +6,6 @@ export interface IUserModel {
   getUserByEmail(email: string): Promise<User>;
   getEmailByUser(id: number): Promise<User>;
   updateUserEmail(id: number, email: string): Promise<User>;
+  updateUserPassword(id: number, password: string): Promise<User>;
   deleteUser(id: number): Promise<User>;
 }
