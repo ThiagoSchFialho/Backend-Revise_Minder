@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 var express = require('express');
 const { UserModel} = require('../models/user.model');
+const bcrypt = require('bcrypt');
 
 var router = express.Router();
 const verifyToken = require('../middlewares/authMiddleware');
@@ -25,9 +26,6 @@ router.get('/email', verifyToken, async function(req: Request, res: Response, ne
 router.put('/email', verifyToken, async function(req: Request, res: Response, next: any) {
   const { user_id, email } = req.body;
 
-  console.log(user_id)
-  console.log(email)
-
   try {
     if (!email) {
       return res.status(400).json({ error: 'Email indefinido' });
@@ -47,6 +45,36 @@ router.put('/email', verifyToken, async function(req: Request, res: Response, ne
     return res.status(200).json(user2);
   } catch (error) {
     console.error('Erro ao atualizar email', error)
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+})
+
+router.post('/password', verifyToken, async function(req: Request, res: Response, next: any) {
+  const { user_id, password } = req.body;
+  
+  try {
+    if (!password) {
+      return res.status(400).json({ error: 'Senha indefinida' });
+    }
+
+    if (!user_id) {
+      return res.status(400).json({ error: 'Usuário indefinido' });
+    }
+
+    const user = await userModel.getUser(user_id);
+
+    if (!user) {
+      return res.status(400).json({ error: 'Usuário não existe' });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user?.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ error: 'Senha incorreta' });
+    }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error(error)
     return res.status(500).json({ error: 'Erro interno do servidor' });
   }
 })
