@@ -56,7 +56,8 @@ export class StudyModel implements IStudyModel {
       result = await client.query(`
         SELECT *
         FROM studies
-        WHERE user_id = $1;`,
+        WHERE user_id = $1
+        ORDER BY date;`,
         [user_id]
       );
 
