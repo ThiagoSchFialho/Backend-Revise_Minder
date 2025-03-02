@@ -101,4 +101,20 @@ router.put('/password', verifyToken, async function(req: Request, res: Response,
   }
 })
 
+router.delete('/:id', verifyToken, async function(req: Request, res: Response, next: any) {
+  const { id } = req.params;
+
+  try {
+    if (!id) {
+      return res.status(400).json({ error: 'Usuário indefinido' });
+    }
+    const user = await userModel.deleteUser(id);
+
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error('Erro ao excluir usuário ', error)
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+})
+
 module.exports = router;

@@ -135,6 +135,24 @@ export class UserModel implements IUserModel {
   }
 
   public async deleteUser(id: number): Promise<User> {
-    throw new Error('Method not implemented.');
+    const client = await pool.connect();
+    let result: QueryResult<User>;
+    
+    try {
+      result = await client.query(`
+        DELETE from users
+        WHERE id = $1
+        RETURNING *;`,
+        [id]
+      );
+      
+    } catch (error) {
+      console.error('Erro ao editar senha', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    return result.rows[0];
   }
 }
