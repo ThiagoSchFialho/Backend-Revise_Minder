@@ -17,7 +17,12 @@ var app = express();
 // app.use(cors());
 
 // for app to accept requests from the frontend running on port 5173 locally
-app.use(cors({ origin: process.env.FRONTEND_HOST }));
+app.use(cors({
+  origin: process.env.FRONTEND_HOST,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
 // view engine setup
 app.set('view engine', 'ejs');
