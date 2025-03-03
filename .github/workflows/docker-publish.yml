@@ -13,17 +13,20 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      - name: Instalar Docker Compose
-        run: sudo apt-get update && sudo apt-get install -y docker-compose
+      - name: Instalar Docker Compose Plugin
+        run: sudo apt-get update && sudo apt-get install -y docker-compose-plugin
+
+      - name: Verificar instalação do Docker Compose
+        run: docker compose version
 
       - name: Login no Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Build da imagem com Docker Compose
-        run: docker-compose build app
+        run: docker compose build app
 
       - name: Tag da imagem
-        run: docker tag ${{ secrets.DOCKER_USERNAME }}/revise_minder_backend:latest ${{ secrets.DOCKER_USERNAME }}/revise_minder_backend:latest
+        run: docker tag ${{ secrets.DOCKER_USERNAME }}/meu-app:latest ${{ secrets.DOCKER_USERNAME }}/meu-app:latest
 
       - name: Push da imagem para o Docker Hub
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/revise_minder_backend:latest
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/meu-app:latest
