@@ -18,9 +18,12 @@ jobs:
 
       - name: Criar rede Docker
         run: docker network create mynetwork
-
-      - name: Corrigir permissões do .env
-        run: chmod 644 .env      
+        
+      - name: Criar arquivo .env com secrets
+        run: |
+          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" > .env
+          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+          echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
 
       - name: Build e rodar PostgreSQL
         run: |
