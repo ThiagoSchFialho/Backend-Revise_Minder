@@ -28,7 +28,7 @@ jobs:
       - name: Build e rodar PostgreSQL
         run: |
           docker build -t mypostgres -f Dockerfile.postgres .
-          docker run -d --name postgres_container --network mynetwork --env-file .env -p 5432:5432 mypostgres
+          docker run -d --name db --network mynetwork --env-file .env -p 5432:5432 mypostgres
 
       - name: Build da imagem do app
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/revise_minder_backend:latest .
