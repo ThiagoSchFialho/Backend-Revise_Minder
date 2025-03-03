@@ -1,4 +1,4 @@
-name: Build and Push Docker Image with Docker Compose
+name: Build and Push Docker Image
 
 on:
   push:
@@ -13,20 +13,23 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      - name: Instalar Docker Compose Plugin
-        run: sudo apt-get update && sudo apt-get install -y docker-compose-plugin
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      - name: Verificar instalação do Docker Compose
-        run: docker compose version
+      - name: Criar rede Docker
+        run: docker network create mynetwork
+
+      - name: Build e rodar PostgreSQL
+        run: |
+          docker build -t mypostgres -f Dockerfile.postgres .
+          docker run -d --name postgres_container --network mynetwork --env-file .env -p 5432:5432 mypostgres
+      
+
+      - name: Build da imagem do app
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/revise_minder_backend:latest .
 
       - name: Login no Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      - name: Build da imagem com Docker Compose
-        run: docker compose build app
-
-      - name: Tag da imagem
-        run: docker tag ${{ secrets.DOCKER_USERNAME }}/meu-app:latest ${{ secrets.DOCKER_USERNAME }}/meu-app:latest
-
       - name: Push da imagem para o Docker Hub
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/meu-app:latest
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/revise_minder_backend:latest
