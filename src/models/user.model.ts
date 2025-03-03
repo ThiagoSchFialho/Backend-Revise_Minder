@@ -4,6 +4,52 @@ import { QueryResult } from 'pg';
 const pool = require('../db/db.config');
 
 export class UserModel implements IUserModel {
+  public async addStudyAdded(id: number): Promise<User> {
+    const client = await pool.connect();
+    let result: QueryResult<User>;
+    
+    try {
+      result = await client.query(`
+        UPDATE users
+        SET qnt_studies_added = qnt_studies_added + 1
+        WHERE id = $1
+        RETURNING *;`,
+        [id]
+      );
+      
+    } catch (error) {
+      console.error('Erro ao editar email', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    return result.rows[0];
+  }
+
+  public async addReviewDone(id: number): Promise<User> {
+    const client = await pool.connect();
+    let result: QueryResult<User>;
+    
+    try {
+      result = await client.query(`
+        UPDATE users
+        SET qnt_reviews_done = qnt_reviews_done + 1
+        WHERE id = $1
+        RETURNING *;`,
+        [id]
+      );
+      
+    } catch (error) {
+      console.error('Erro ao editar email', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    return result.rows[0];
+  }
+
   public async createUser(email: string, password: string): Promise<User> {
     const client = await pool.connect();
     let result: QueryResult<User>;

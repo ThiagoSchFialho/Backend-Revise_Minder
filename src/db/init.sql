@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS users (
 	id SERIAL PRIMARY KEY,
 	email VARCHAR(255) NOT NULL,
 	password VARCHAR(255) NOT NULL,
-	qnt_studies INT NOT NULL DEFAULT 0,
+	qnt_studies_added INT NOT NULL DEFAULT 0,
 	qnt_reviews_done INT NOT NULL DEFAULT 0
 );
 

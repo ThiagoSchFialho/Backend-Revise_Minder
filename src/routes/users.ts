@@ -133,4 +133,21 @@ router.get('/', verifyToken, async function(req: Request, res: Response, next: a
   }
 })
 
+router.put('/studyAdded', verifyToken, async function(req: Request, res: Response, next: any) {
+  const { user_id } = req.body;
+
+  try {
+    if (!user_id) {
+      return res.status(400).json({ error: 'Usuário indefinido' });
+    }
+
+    const user = await userModel.addStudyAdded(user_id);
+
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error('Erro ao incrementar estudos adicionados', error)
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+})
+
 module.exports = router;
