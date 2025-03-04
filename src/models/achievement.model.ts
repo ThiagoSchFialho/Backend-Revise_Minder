@@ -35,4 +35,25 @@ export class AchievementModel implements IAchievementModel {
     return result.rows[0];
   }
 
+  public async getAchievementByName(name: string, user_id: number): Promise<Achievement> {
+    const client = await pool.connect();
+    let result: QueryResult<Achievement>;
+
+    try {
+      result = await client.query(`
+        SELECT *
+        FROM achievements
+        WHERE name = $1 AND user_id = $2;`,
+        [name, user_id]
+      );
+      
+    } catch (error) {
+      console.error('Erro ao recuperar conquista', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    return result.rows[0];
+  }
 }

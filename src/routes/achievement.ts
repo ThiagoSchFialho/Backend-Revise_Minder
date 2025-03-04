@@ -31,4 +31,24 @@ router.post('/', verifyToken, async function(req: Request, res: Response, next: 
   }
 })
 
+router.get('/', verifyToken, async function(req: Request, res: Response, next: any) {
+  const { user_id, achievement_name } = req.query;
+
+  try {
+    if (!user_id) {
+      return res.status(400).json({ error: 'Usuário indefinido' });
+    }
+
+    const achievement = await achievementModel.getAchievementByName(achievement_name, user_id);
+    if (achievement) {
+      return res.status(404)
+    }
+
+    return res.status(200).json(achievement);
+  } catch (error) {
+    console.error('Erro ao recuperar conquista', error);
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+})
+
 module.exports = router;
