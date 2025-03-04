@@ -4,4 +4,5 @@ export interface IUser {
   password: string;
   qnt_studies_added: number;
   qnt_reviews_done: number;
+  consented_terms: boolean;
 }

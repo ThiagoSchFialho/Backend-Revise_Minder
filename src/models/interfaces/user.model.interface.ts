@@ -1,7 +1,7 @@
 import { User } from '../../entities/user.entity';
 
 export interface IUserModel {
-  createUser(email: string, password: string): Promise<User>;
+  createUser(email: string, password: string, consented_terms: boolean): Promise<User>;
   getUser(id: number): Promise<User>;
   getUserByEmail(email: string): Promise<User>;
   getEmailByUser(id: number): Promise<User>;

@@ -50,16 +50,16 @@ export class UserModel implements IUserModel {
     return result.rows[0];
   }
 
-  public async createUser(email: string, password: string): Promise<User> {
+  public async createUser(email: string, password: string, consented_terms: boolean): Promise<User> {
     const client = await pool.connect();
     let result: QueryResult<User>;
 
     try {
       result = await client.query(`
-        INSERT INTO users (email, password)
-        VALUES ($1, $2)
+        INSERT INTO users (email, password, consented_terms)
+        VALUES ($1, $2, $3)
         RETURNING *;`,
-        [email, password]
+        [email, password, consented_terms]
       );
     } catch (error) {
       console.error('Erro ao criar usuário', error);

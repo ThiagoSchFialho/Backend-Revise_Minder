@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS users (
 	email VARCHAR(255) NOT NULL,
 	password VARCHAR(255) NOT NULL,
 	qnt_studies_added INT NOT NULL DEFAULT 0,
-	qnt_reviews_done INT NOT NULL DEFAULT 0
+	qnt_reviews_done INT NOT NULL DEFAULT 0,
+	consented_terms BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS studies (
