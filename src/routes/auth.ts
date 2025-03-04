@@ -14,16 +14,18 @@ router.get('/verify-token', verifyToken, (req: Request, res: Response ) => {
 });
 
 router.post('/register', async (req: Request, res: Response) => {
+  const { email, password, terms } = req.body;
+
   try {
-    const { email, password } = req.body;
     const user = await userModel.getUserByEmail(email);
     if (user) {
       return res
         .status(403)
         .json({ error: 'User with that email already exists' });
     }
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    await userModel.createUser(email, hashedPassword, true);
+    await userModel.createUser(email, hashedPassword, terms);
     res.status(201).json({ message: 'User registered successfully' });
 
   } catch (error) {
