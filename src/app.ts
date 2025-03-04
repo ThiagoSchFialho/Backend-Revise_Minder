@@ -14,16 +14,12 @@ require('dotenv').config();
 
 var app = express();
 
-// to accept requests from any origin
-app.use(cors());
-
-// for app to accept requests from the frontend running on port 5173 locally
-// app.use(cors({
-//   origin: process.env.FRONTEND_HOST,
-//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-//   credentials: true
-// }));
+app.use(cors({
+  origin: process.env.FRONTEND_HOST,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
