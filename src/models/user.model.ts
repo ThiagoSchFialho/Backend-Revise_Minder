@@ -4,6 +4,50 @@ import { QueryResult } from 'pg';
 const pool = require('../db/db.config');
 
 export class UserModel implements IUserModel {
+  public async getUserByVerificationToken(token: string): Promise<User> {
+    const client = await pool.connect();
+    let result: QueryResult<User>;
+
+    try {
+      result = await client.query(`
+        SELECT *
+        FROM users
+        WHERE verification_token = $1;`,
+        [token]
+      );
+    } catch (error) {
+      console.error('Erro ao recuperar usuário', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    return result.rows[0];
+  }
+
+  public async verifyUserEmail(id: number): Promise<User> {
+    const client = await pool.connect();
+    let result: QueryResult<User>;
+    
+    try {
+      result = await client.query(`
+        UPDATE users
+        SET is_verified = TRUE, verification_token = NULL
+        WHERE id = $1
+        RETURNING *;`,
+        [id]
+      );
+      
+    } catch (error) {
+      console.error('Erro ao editar email', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    return result.rows[0];
+  }
+
   public async addStudyAdded(id: number): Promise<User> {
     const client = await pool.connect();
     let result: QueryResult<User>;
@@ -50,16 +94,16 @@ export class UserModel implements IUserModel {
     return result.rows[0];
   }
 
-  public async createUser(email: string, password: string, consented_terms: boolean): Promise<User> {
+  public async createUser(email: string, password: string, consented_terms: boolean, verification_token: string): Promise<User> {
     const client = await pool.connect();
     let result: QueryResult<User>;
 
     try {
       result = await client.query(`
-        INSERT INTO users (email, password, consented_terms)
-        VALUES ($1, $2, $3)
+        INSERT INTO users (email, password, consented_terms, verification_token, is_verified)
+        VALUES ($1, $2, $3, $4, FALSE)
         RETURNING *;`,
-        [email, password, consented_terms]
+        [email, password, consented_terms, verification_token]
       );
     } catch (error) {
       console.error('Erro ao criar usuário', error);

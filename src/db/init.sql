@@ -4,7 +4,11 @@ CREATE TABLE IF NOT EXISTS users (
 	password VARCHAR(255) NOT NULL,
 	qnt_studies_added INT NOT NULL DEFAULT 0,
 	qnt_reviews_done INT NOT NULL DEFAULT 0,
-	consented_terms BOOLEAN NOT NULL DEFAULT FALSE
+	consented_terms BOOLEAN NOT NULL DEFAULT FALSE,
+	COLUMN is_verified BOOLEAN DEFAULT FALSE,
+	COLUMN verification_token VARCHAR(255),
+	COLUMN reset_password_token VARCHAR(255),
+	COLUMN reset_password_expires TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS studies (
