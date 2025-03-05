@@ -6,7 +6,8 @@
 
 var app = require('../app');
 var debug = require('debug')('backend-revise-minder:server');
-var http = require('http');
+var https = require('https');
+var fs = require('fs');
 
 /**
  * Get port from environment and store in Express.
@@ -16,10 +17,17 @@ var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
- * Create HTTP server.
+ * Load SSL certificates (managed by Certbot).
  */
+const options = {
+  cert: fs.readFileSync('/etc/letsencrypt/live/reviseminder.com/fullchain.pem'),
+  key: fs.readFileSync('/etc/letsencrypt/live/reviseminder.com/privkey.pem')
+};
 
-var server = http.createServer(app);
+/**
+ * Create HTTPS server.
+ */
+var server = https.createServer(options, app);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -50,7 +58,7 @@ function normalizePort(val: string) {
 }
 
 /**
- * Event listener for HTTP server "error" event.
+ * Event listener for HTTPS server "error" event.
  */
 
 function onError(error: { syscall: string; code: any; }) {
@@ -78,7 +86,7 @@ function onError(error: { syscall: string; code: any; }) {
 }
 
 /**
- * Event listener for HTTP server "listening" event.
+ * Event listener for HTTPS server "listening" event.
  */
 
 function onListening() {

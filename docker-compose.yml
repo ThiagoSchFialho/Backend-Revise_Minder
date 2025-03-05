@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   db:
     image: postgres:15
@@ -23,6 +22,8 @@ services:
       - "3000:3000"
     env_file:
       - .env
-
+    volumes:
+      - /etc/letsencrypt/live/reviseminder.com:/etc/letsencrypt/live/reviseminder.com:ro
+      - /etc/letsencrypt/archive:/etc/letsencrypt/archive:ro
 volumes:
   pgdata:
