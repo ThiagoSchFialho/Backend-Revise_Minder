@@ -12,4 +12,7 @@ export interface IUserModel {
   deleteUser(id: number): Promise<User>;
   addStudyAdded(id: number): Promise<User>;
   addReviewDone(id: number): Promise<User>;
+  saveResetToken(id: number, resetToken: string, espires: Date): Promise<User>;
+  getUserByResetToken(token: string): Promise<User>;
+  clearResetToken(id: number): Promise<User>;
 }

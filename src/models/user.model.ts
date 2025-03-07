@@ -245,4 +245,75 @@ export class UserModel implements IUserModel {
 
     return result.rows[0];
   }
+
+  public async saveResetToken(id: number, resetToken: string, expires: Date): Promise<User> {
+    const client = await pool.connect();
+    let result: QueryResult<User>;
+    
+    try {
+      result = await client.query(`
+          UPDATE users
+          SET reset_password_token = $1, reset_password_expires = $2
+          WHERE id = $3
+          RETURNING *;`,
+          [resetToken, new Date(expires), id]
+      )
+
+    } catch (error) {
+      console.error('Erro ao atualizar usuário', error);
+      throw error;
+
+    } finally {
+      client.release();
+    }
+
+    return result.rows[0];
+  }
+  
+  public async getUserByResetToken(token: string): Promise<User> {
+    const client = await pool.connect();
+    let result: QueryResult<User>;
+    
+    try {
+      result = await client.query(`
+        SELECT *
+        FROM users
+        WHERE reset_password_token = $1;`,
+        [token]
+      )
+
+    } catch (error) {
+      console.error('Erro ao recuperar usuário', error);
+      throw error;
+      
+    } finally {
+      client.release();
+    }
+
+    return result.rows[0];
+  }
+  
+  public async clearResetToken(id: number): Promise<User> {
+    const client = await pool.connect();
+    let result: QueryResult<User>;
+    
+    try {
+      result = await client.query(`
+        UPDATE users
+        SET reset_password_token = NULL, reset_password_expires =  NULL
+        WHERE id = $1
+        RETURNING *;`,
+        [id]
+      )
+
+    } catch (error) {
+      console.error('Erro ao atualizar usuário', error);
+      throw error;
+      
+    } finally {
+      client.release();
+    }
+
+    return result.rows[0];
+  }
 }
