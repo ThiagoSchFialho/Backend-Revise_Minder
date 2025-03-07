@@ -157,7 +157,7 @@ router.post('/forgot-password', async (req: Request, res: Response) => {
       color: white;
     `;
 
-    const resetLink = `http://localhost:5173/resetPassword?token=${resetToken}`;
+    const resetLink = `https://reviseminder.com/resetPassword?token=${resetToken}`;
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
