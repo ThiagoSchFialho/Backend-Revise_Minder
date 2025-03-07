@@ -60,7 +60,7 @@ router.post('/register', async (req: Request, res: Response) => {
       color: white;
     `;
 
-    const verificationLink = `https://reviseminder.com/api/verify-email?token=${verificationToken}`;
+    const verificationLink = `https://reviseminder.com/api/auth/verify-email?token=${verificationToken}`;
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
