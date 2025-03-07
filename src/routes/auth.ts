@@ -94,7 +94,7 @@ router.get('/verify-email', async (req: Request, res: Response) => {
     }
 
     await userModel.verifyUserEmail(user.id);
-    res.status(200).json({ message: 'Email verified successfully' });
+    res.render('verify-email');
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Verification failed' });
