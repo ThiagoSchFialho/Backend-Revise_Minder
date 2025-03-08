@@ -60,7 +60,7 @@ router.post('/register', async (req: Request, res: Response) => {
       color: white;
     `;
 
-    const verificationLink = `https://reviseminder.com/api/auth/verify-email?token=${verificationToken}`;
+    const verificationLink = `${process.env.BACKEND_HOST}/auth/verify-email?token=${verificationToken}`;
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -157,7 +157,7 @@ router.post('/forgot-password', async (req: Request, res: Response) => {
       color: white;
     `;
 
-    const resetLink = `https://reviseminder.com/resetPassword?token=${resetToken}`;
+    const resetLink = `${process.env.FRONTEND_HOST}/resetPassword?token=${resetToken}`;
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
