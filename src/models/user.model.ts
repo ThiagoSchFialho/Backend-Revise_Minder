@@ -4,6 +4,28 @@ import { QueryResult } from 'pg';
 const pool = require('../db/db.config');
 
 export class UserModel implements IUserModel {
+  public async updateVerificationToken(id: number, verificationToken: string): Promise<User> {
+    const client = await pool.connect();
+    let result: QueryResult<User>;
+
+    try {
+      result = await client.query(`
+        UPDATE users
+        SET verification_token = $2
+        WHERE id = $1
+        RETURNING *;`,
+        [id, verificationToken]
+      );
+    } catch (error) {
+      console.error('Erro ao atualizar token', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    return result.rows[0];
+  }
+
   public async getUserByVerificationToken(token: string): Promise<User> {
     const client = await pool.connect();
     let result: QueryResult<User>;

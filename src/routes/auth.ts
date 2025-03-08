@@ -200,4 +200,59 @@ router.post('/reset-password', async (req: Request, res: Response) => {
   }
 });
 
+router.post('/resend-verification', async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  try {
+    const user = await userModel.getUserByEmail(email);
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+    
+    if (user.is_verified) {
+      return res.status(400).json({ error: 'Usuário já verificado' });
+    }
+
+    const verificationToken = generateToken();
+    await userModel.updateVerificationToken(user.id, verificationToken);
+
+    const textStyles = "color: black; font-size: 16pt; text-align: center; margin-bottom: 25px;";
+    const buttonContainerStyles = "text-align: center;";
+    const buttonStyles = `
+      background-color: #1A97F0;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      font-size: 12pt;
+      font-weight: 600;
+      text-align: center;
+      display: inline-block;
+      text-decoration: none;
+      color: white;
+    `;
+
+    const verificationLink = `${process.env.BACKEND_HOST}/auth/verify-email?token=${verificationToken}`;
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Verifique seu email',
+      html: `
+        <p style="${textStyles}">
+          Por favor, clique no link para verificar seu email:
+        </p>
+        <div style="${buttonContainerStyles}">
+          <a href="${verificationLink}" style="${buttonStyles}">Verificar Email</a>
+        </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ message: 'Email de verificação reenviado com sucesso' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Falha ao reenviar email de verificação' });
+  }
+});
+
 module.exports = router;
